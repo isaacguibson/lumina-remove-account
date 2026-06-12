@@ -59,9 +59,10 @@
     }
 
     .logo-name {
-      font-size: 18px;
+      font-size: 34px;
       font-weight: 700;
       letter-spacing: -0.3px;
+      color: 'greenyellow';
     }
 
     h1 {
@@ -209,8 +210,7 @@
 <body>
   <div class="card">
     <div class="logo">
-      <div class="logo-icon">🏆</div>
-      <div class="logo-name">Pix Premiado</div>
+      <div class="logo-name">Lumina</div>
     </div>
 
     <!-- ─── Etapa 1: Formulário de e-mail ─── -->
@@ -347,8 +347,12 @@
     }
 
     // ─── Detectar callback do magic link ─────────────────────────────────────
-    // Supabase coloca os tokens no hash da URL após o clique no link.
-    // onAuthStateChange é disparado assim que a sessão é processada.
+    // 1) Verifica sessão já estabelecida na carga da página (redirect do link)
+    client.auth.getSession().then(({ data: { session } }) => {
+      if (session) showStep('confirm');
+    });
+
+    // 2) Escuta mudanças futuras (caso o token ainda esteja sendo processado)
     client.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
         showStep('confirm');
