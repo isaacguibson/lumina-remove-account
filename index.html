@@ -59,10 +59,9 @@
     }
 
     .logo-name {
-      font-size: 34px;
+      font-size: 18px;
       font-weight: 700;
       letter-spacing: -0.3px;
-      color: 'greenyellow';
     }
 
     h1 {
@@ -210,7 +209,7 @@
 <body>
   <div class="card">
     <div class="logo">
-      <div class="logo-name">Lumina</div>
+      <div class="logo-name">LUMINA</div>
     </div>
 
     <!-- ─── Etapa 1: Formulário de e-mail ─── -->
@@ -323,8 +322,12 @@
 
   <script>
     // ─── Configuração do Supabase ────────────────────────────────────────────
-    const SUPABASE_URL     = 'https://thyszejwjzaeyjvrxilw.supabase.co';
+    const SUPABASE_URL      = 'https://thyszejwjzaeyjvrxilw.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoeXN6ZWp3anphZXlqdnJ4aWx3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NjI1NjEsImV4cCI6MjA5NDMzODU2MX0.5_-yJGZ1urTnOMR6JkbfVvAz5Ig4LyVJT-Y9TrEMf7Q';
+
+    // URL pública onde esta página está hospedada.
+    // Deve estar na lista de "Redirect URLs" do Supabase Dashboard.
+    const PAGE_URL = 'https://isaacguibson.github.io/lumina-remove-account/';
 
     const { createClient } = supabase;
     const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -383,7 +386,7 @@
           email,
           options: {
             shouldCreateUser: false,          // não cria conta nova
-            emailRedirectTo: window.location.href,
+            emailRedirectTo: PAGE_URL,
           },
         });
 
