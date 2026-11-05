@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Excluir Conta – Pix Premiado</title>
+  <title>Excluir Conta – Lumina</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -209,7 +209,8 @@
 <body>
   <div class="card">
     <div class="logo">
-      <div class="logo-name">LUMINA</div>
+      <div class="logo-icon">🏆</div>
+      <div class="logo-name">Lumina</div>
     </div>
 
     <!-- ─── Etapa 1: Formulário de e-mail ─── -->
@@ -303,7 +304,7 @@
       <p class="subtitle">
         Sua conta foi excluída com sucesso e todos os seus dados foram removidos
         permanentemente.<br /><br />
-        Obrigado por ter usado o Pix Premiado.
+        Obrigado por ter usado o Lumina.
       </p>
     </div>
 
@@ -314,6 +315,9 @@
       <p class="subtitle" id="error-detail">
         Ocorreu um erro inesperado. Por favor, tente novamente.
       </p>
+      <a id="open-app" href="com.guibsonsoftwares.lumina://account/delete" class="btn btn-primary" style="display:none">
+        Abrir Lumina
+      </a>
       <button onclick="location.href = location.pathname" class="btn btn-primary">
         Tentar novamente
       </button>
@@ -343,9 +347,11 @@
       document.getElementById('step-' + id).classList.add('active');
     }
 
-    function showError(detail) {
+    function showError(detail, code) {
       document.getElementById('error-detail').textContent =
         detail || 'Ocorreu um erro inesperado.';
+      document.getElementById('open-app').style.display =
+        code === 'APPLE_REAUTHENTICATION_REQUIRED' || code === 'SUBSCRIPTION_ACTIVE' ? 'block' : 'none';
       showStep('error');
     }
 
@@ -413,8 +419,16 @@
       showStep('deleting');
 
       try {
-        const { error } = await client.rpc('delete_own_account');
-        if (error) throw error;
+        const { data, error } = await client.functions.invoke('delete-account', { method: 'POST' });
+        if (error) {
+          let payload = null;
+          if (error.context instanceof Response) {
+            payload = await error.context.clone().json().catch(() => null);
+          }
+          showError(payload?.error || 'Não foi possível excluir a conta.', payload?.code);
+          return;
+        }
+        if (!data?.success) throw new Error('Não foi possível confirmar a exclusão. Tente novamente.');
 
         // Encerra a sessão local (a conta já foi removida no servidor)
         await client.auth.signOut({ scope: 'local' });
